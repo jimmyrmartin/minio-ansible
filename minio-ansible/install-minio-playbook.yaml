@@ -8,7 +8,7 @@
   tasks:
   - name: Create Minio user
     ansible.builtin.user:
-      name: minio-user
+      name: "{{ minio_user }}""
       shell: /sbin/nologin
       system: true
       create_home: true
@@ -16,7 +16,7 @@
 
   - name: Create Minio group
     ansible.builtin.group:
-      name: minio-user
+      name: "{{ minio_group }}"
       system: true
     ignore_errors: true
 
@@ -24,8 +24,8 @@
     ansible.builtin.file:
       path: "{{ item }}"
       state: directory
-      owner: minio-user
-      group: minio-user
+      owner: "{{ minio_user }}"
+      group: "{{ minio_group }}"
       mode: '0755'
     with_items:
       - /usr/local/bin
@@ -38,16 +38,16 @@
     ansible.builtin.copy:
       src: files/minio
       dest: /usr/local/bin/minio
-      owner: minio-user
-      group: minio-user
+      owner: "{{ minio_user }}"
+      group: "{{minio_group}}"
       mode: '0755'
 
   - name: Copy public CA certificate to MinIO user directory with proper names
     ansible.builtin.copy:
       src: files/{{ minio_ca_cert }}
       dest: /home/minio-user/.minio/CAs/theverseCA.crt
-      owner: minio-user
-      group: minio-user
+      owner: "{{ minio_user }}"
+      group: "{{ minio_group }}"
       mode: '0755'
     when: enable_certificates == true
 
@@ -55,8 +55,8 @@
     ansible.builtin.copy:
       src: files/{{ minio_public_cert }}
       dest: /home/minio-user/.minio/certs/public.crt
-      owner: minio-user
-      group: minio-user
+      owner: "{{ minio_user }}"
+      group: "{{ minio_group }}"
       mode: '0755'
     when: enable_certificates == true
 
@@ -64,8 +64,8 @@
     ansible.builtin.copy:
       src: files/{{ minio_private_key }}
       dest: /home/minio-user/.minio/certs/private.key
-      owner: minio-user
-      group: minio-user
+      owner: "{{ minio_user }}"
+      group: "{{ minio_group }}"
       mode: '0755'
     when: enable_certificates == true
 
@@ -93,7 +93,7 @@
     ansible.builtin.systemd:
       name: minio
       enabled: true
-      state: started
+      state: restarted
 
   - name: Wait for Minio to start
     ansible.builtin.wait_for:
