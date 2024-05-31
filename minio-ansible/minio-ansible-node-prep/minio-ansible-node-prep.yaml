@@ -1,0 +1,73 @@
+---
+- name: Format multiple drives with XFS and set up mount points for MinIO
+  hosts: all
+  become: true
+  serial: 4
+  vars:
+    drives:
+      - device: /dev/vdb
+        label: DISK1
+        mount_point: /mnt/disk1
+      - device: /dev/vdc
+        label: DISK2
+        mount_point: /mnt/disk2
+      - device: /dev/vdd
+        label: DISK3
+        mount_point: /mnt/disk3
+      - device: /dev/vde
+        label: DISK4
+        mount_point: /mnt/disk4
+
+  tasks:
+  - name: Install xfsprogs
+    package:
+      name: xfsprogs
+      state: present
+
+  - name: Format drives with XFS
+    filesystem:
+      fstype: xfs
+      dev: "{{ item.device }}"
+      opts: -L {{ item.label }}
+    with_items: "{{ drives }}"
+
+  - name: Create Minio user
+    ansible.builtin.user:
+      name: minio-user
+      shell: /sbin/nologin
+      system: true
+      create_home: true
+    ignore_errors: true
+
+  - name: Create Minio group
+    ansible.builtin.group:
+      name: minio-user
+      system: true
+    ignore_errors: true
+    
+  - name: Create mount points
+    file:
+      path: "{{ item.mount_point }}"
+      state: directory
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
+    with_items: "{{ drives }}"
+
+  - name: Generate /etc/fstab entries
+    lineinfile:
+      path: /etc/fstab
+      state: present
+      line: "LABEL={{ item.label }} {{ item.mount_point }} xfs defaults 0 2"
+      backup: yes
+    with_items: "{{ drives }}"
+
+  - name: Some systems require doing a daemon-reload after updating fstab these days
+    ansible.builtin.systemd_service:
+      daemon-reload: true
+
+  - name: Mount all filesystems from fstab
+    ansible.builtin.command:
+      argv:
+        - mount
+        - -a
