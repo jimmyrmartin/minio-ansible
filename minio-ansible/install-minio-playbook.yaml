@@ -3,6 +3,8 @@
   hosts: all
   become: true
   serial: 4
+  vars_files:
+    - vars/main.yml
   tasks:
   - name: Create Minio user
     ansible.builtin.user:
@@ -38,7 +40,7 @@
 
   - name: Copy public CA certificate to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: files/"{{ minio_ca_cert }}"
+      src: "{{ minio_ca_cert }}"
       dest: /home/minio-user/.minio/CAs/theverseCA.crt
       owner: minio-user
       group: minio-user
@@ -47,7 +49,7 @@
 
   - name: Copy server certificate to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: files/"{{ minio_public_cert }}"
+      src: "{{ minio_public_cert }}"
       dest: /home/minio-user/.minio/certs/public.crt
       owner: minio-user
       group: minio-user
@@ -56,7 +58,7 @@
 
   - name: Copy server key to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: files/"{{ minio_private_key }}"
+      src: "{{ minio_private_key }}"
       dest: /home/minio-user/.minio/certs/private.key
       owner: minio-user
       group: minio-user
