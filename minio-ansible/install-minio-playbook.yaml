@@ -14,6 +14,12 @@
       create_home: true
     ignore_errors: true
 
+  - name: Create Minio group
+    ansible.builtin.group:
+      name: minio-user
+      system: true
+    ignore_errors: true
+
   - name: Create Minio directories
     ansible.builtin.file:
       path: "{{ item }}"
@@ -23,8 +29,6 @@
       mode: '0755'
     with_items:
       - /usr/local/bin
-      - /etc/minio
-      - /var/minio
       - /home/minio-user/.minio
       - /home/minio-user/.minio/certs
       - /home/minio-user/.minio/CAs
@@ -40,7 +44,7 @@
 
   - name: Copy public CA certificate to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: "{{ minio_ca_cert }}"
+      src: files/{{ minio_ca_cert }}
       dest: /home/minio-user/.minio/CAs/theverseCA.crt
       owner: minio-user
       group: minio-user
@@ -49,7 +53,7 @@
 
   - name: Copy server certificate to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: "{{ minio_public_cert }}"
+      src: files/{{ minio_public_cert }}
       dest: /home/minio-user/.minio/certs/public.crt
       owner: minio-user
       group: minio-user
@@ -58,7 +62,7 @@
 
   - name: Copy server key to MinIO user directory with proper names
     ansible.builtin.copy:
-      src: "{{ minio_private_key }}"
+      src: files/{{ minio_private_key }}
       dest: /home/minio-user/.minio/certs/private.key
       owner: minio-user
       group: minio-user
