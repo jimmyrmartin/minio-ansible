@@ -8,6 +8,6 @@ The aim here is to create an easier maintained and used set of playbooks as well
 Design goals:
 
 - The playbook should be able to support airgapped and "online" installs.
-- Easily updated by someone new Ansible
+- Easily updated by someone new to Ansible
 - Self-documenting
-- Node prep and MinIO install seperated by concern
+- Node prep and MinIO install seperated by concerns
