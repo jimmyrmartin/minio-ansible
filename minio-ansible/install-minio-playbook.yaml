@@ -1,91 +1,98 @@
 ---
 - name: Install Minio Server
   hosts: all
-  become: yes
-  serial: {{ forks }}
+  become: true
+  serial: 4
   tasks:
-    - name: Create Minio user
-      ansible.builtin.user:
-        name: minio
-        shell: /sbin/nologin
-        system: true
-        create_home: true
-      ignore_errors: true
+  - name: Create Minio user
+    ansible.builtin.user:
+      name: minio
+      shell: /sbin/nologin
+      system: true
+      create_home: true
+    ignore_errors: true
 
-    - name: Create Minio directories
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        owner: minio-user
-        group: minio-user
-        mode: '0755'
-      with_items:
-        - /usr/local/bin
-        - /etc/minio
-        - /var/minio
-        - /home/minio-user/.minio
-        - /home/minio-user/.minio/certs
-        - /home/minio-user/.minio/CAs
-      ignore_errors: true
+  - name: Create Minio directories
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
+    with_items:
+      - /usr/local/bin
+      - /etc/minio
+      - /var/minio
+      - /home/minio-user/.minio
+      - /home/minio-user/.minio/certs
+      - /home/minio-user/.minio/CAs
+    ignore_errors: true
 
-    - name: Copy Minio binary
-      ansible.builtin.copy:
-        src: files/minio
-        dest: /usr/local/bin/minio
-        owner: minio-user
-        group: minio-user
-        mode: '0755'
+  - name: Copy Minio binary
+    ansible.builtin.copy:
+      src: files/minio
+      dest: /usr/local/bin/minio
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
 
-    - name: Copy public CA certificate to MinIO user directory with proper names
-      ansible.builtin.copy:
-        src: files/{{ minio_ca_cert }}
-        dest: /home/minio-user/.minio/CAs/theverseCA.crt
-        owner: minio-user
-        group: minio-user
-        mode: '0755'
-      when: enable_certificates == true
+  - name: Copy public CA certificate to MinIO user directory with proper names
+    ansible.builtin.copy:
+      src: files/"{{ minio_ca_cert }}"
+      dest: /home/minio-user/.minio/CAs/theverseCA.crt
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
+    when: enable_certificates == true
 
- - name: Copy server certificate to MinIO user directory with proper names
-      ansible.builtin.copy:
-        src: files/{{ minio_public_cert }}
-        dest: /home/minio-user/.minio/certs/public.crt
-        owner: minio-user
-        group: minio-user
-        mode: '0755'
-      when: enable_certificates == true
+  - name: Copy server certificate to MinIO user directory with proper names
+    ansible.builtin.copy:
+      src: files/"{{ minio_public_cert }}"
+      dest: /home/minio-user/.minio/certs/public.crt
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
+    when: enable_certificates == true
 
- - name: Copy server key to MinIO user directory with proper names
-      ansible.builtin.copy:
-        src: files/{{ minio_private_key }}
-        dest: /home/minio-user/.minio/certs/private.key
-        owner: minio-user
-        group: minio-user
-        mode: '0755'
-      when: enable_certificates == true
+  - name: Copy server key to MinIO user directory with proper names
+    ansible.builtin.copy:
+      src: files/"{{ minio_private_key }}"
+      dest: /home/minio-user/.minio/certs/private.key
+      owner: minio-user
+      group: minio-user
+      mode: '0755'
+    when: enable_certificates == true
 
-    - name: Copy Minio service file
-      ansible.builtin.copy:
-        src: files/minio.service
-        dest: /etc/systemd/system/minio.service
-        owner: root
-        group: root
-        mode: '0644'
+  - name: Copy Minio service file
+    ansible.builtin.copy:
+      src: files/minio.service
+      dest: /etc/systemd/system/minio.service
+      owner: root
+      group: root
+      mode: '0644'
 
-    - name: Copy Minio default environment file
-      ansible.builtin.template:
-        src: templates/minio.default.j2
-        dest: /etc/default/minio
-        owner: root
-        group: root
-        mode: '0644'
+  - name: Copy Minio default environment file
+    ansible.builtin.template:
+      src: templates/minio.default.j2
+      dest: /etc/default/minio
+      owner: root
+      group: root
+      mode: '0644'
 
-    - name: Reload systemd daemon
-      ansible.builtin.systemd:
-        daemon_reload: true
+  - name: Reload systemd daemon
+    ansible.builtin.systemd:
+      daemon_reload: true
 
-    - name: Enable and start Minio service
-      ansible.builtin.systemd:
-        name: minio
-        enabled: true
-        state: started
+  - name: Enable and start Minio service
+    ansible.builtin.systemd:
+      name: minio
+      enabled: true
+      state: started
 
+  - name: Wait for Minio to start
+    ansible.builtin.wait_for:
+      port: 9000
+      delay: 10
+      timeout: 300
+      state: started
+    ignore_errors: true
