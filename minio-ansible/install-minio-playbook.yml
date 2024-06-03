@@ -29,9 +29,9 @@
       mode: '0755'
     with_items:
       - /usr/local/bin
-      - /home/{{ minio-user }}/.minio
-      - /home/{{ minio-user }}/.minio/certs
-      - /home/{{ minio-user }}/.minio/CAs
+      - /home/{{ minio_user }}/.minio
+      - /home/{{ minio_user }}/.minio/certs
+      - /home/{{ minio_user }}/.minio/CAs
     ignore_errors: true
 
   - name: Copy Minio binary
