@@ -15,6 +15,7 @@ minio_opts: "--console-address :9001"
 minio_root_user: "adminio"
 minio_root_password: "adminio123"
 minio_server_url: "https://minio-01.theverse.home:9000"
+minio_conf_env_file: "/etc/default/minio"
 # minio_ec:""
 
 # Certificates

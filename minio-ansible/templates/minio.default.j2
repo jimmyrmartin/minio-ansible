@@ -37,3 +37,6 @@ MINIO_ROOT_PASSWORD={{ minio_root_password }}
 # not have a load balancer, set this value to to any *one* of the
 # MinIO hosts in the deployment as a temporary measure.
 MINIO_SERVER_URL={{ minio_server_url }}
+
+# set this for MinIO to reload entries with 'mc admin service restart'
+MINIO_CONFIG_ENV_FILE={{ minio_conf_env_file }}
