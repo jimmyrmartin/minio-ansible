@@ -2,7 +2,7 @@
 - name: Install Minio Server
   hosts: all
   become: true
-  serial: 4
+  serial: {{ node_count }}
   vars_files:
     - vars/main.yml
   tasks:

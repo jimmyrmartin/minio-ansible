@@ -5,7 +5,7 @@ minio_user: "minio-user"
 minio_group: "minio-user"
 enable_certificates: true
 # Set to how many nodes are in your cluster
-forks: 4
+node_count: 4
 
 
 # MinIO evnironment variables
