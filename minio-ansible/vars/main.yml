@@ -1,6 +1,8 @@
 ---
 # vars file for minio-ansible
 # Conditional runtime variables
+# Follows along with best practices here:
+# https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html#minio-mnmd
 
 # Used to create the minio-user and minio-user user and group
 minio_user: "minio-user"
