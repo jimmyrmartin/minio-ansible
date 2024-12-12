@@ -1,0 +1,7 @@
+.DS_Store
+minio-ansible/files/ca.crt
+minio-ansible/files/private.key
+minio-ansible/files/public.crt
+minio-ansible/files/theverse-wildcard.crt
+minio-ansible/files/theverse-wildcard.key
+minio-ansible/files/theverseCA.crt

@@ -5,8 +5,8 @@
 # https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html#minio-mnmd
 
 # Used to create the minio-user and minio-user user and group
-minio_user: "minio-user"
-minio_group: "minio-user"
+minio_user: "minio_user"
+minio_group: "minio_user"
 
 # Enables the copying of the correct TLS certificates, if set to false, change minio_volumes to be http://
 enable_certificates: true
@@ -20,7 +20,7 @@ node_count: 4
 
 # Nodes and volumes used in MinIO this can be referred to in the Linux install Multinode Multidisk section.
 # This will create a "distributed cluster"
-minio_volumes: "https://minio-0{1...4}.theverse.home:9000/mnt/disk{1...4}/minio"
+minio_volumes: "https://minio-ansible-0{1...4}.theverse.home:9000/mnt/disk{1...4}/minio"
 
 
 minio_opts: "--console-address :9001"
@@ -28,10 +28,6 @@ minio_opts: "--console-address :9001"
 # MinIO root user and password "super user access key and secret key"
 minio_root_user: "adminio"
 minio_root_password: "adminio123"
-
-# Deprecated for newer releases and not needed in most cases.
-# minio_server_url: "https://minio-01.theverse.home:9000"
-
 
 
 minio_conf_env_file: "/etc/default/minio"
@@ -43,3 +39,6 @@ minio_conf_env_file: "/etc/default/minio"
 minio_ca_cert: "ca.crt"
 minio_public_cert: "public.crt"
 minio_private_key: "private.key"
+
+# Not implemented yet
+# minio_license_file="minio.license"
